@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:global_chat/screens/auth_screen.dart';
 import 'package:global_chat/screens/chat_screen.dart';
 
 void main() async {
@@ -17,11 +19,30 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Global Chat',
       theme: ThemeData(
-        colorScheme: .fromSeed(seedColor: Colors.blueGrey),
+        colorScheme: .fromSeed(
+          seedColor: Colors.deepPurpleAccent,
+          error: Color(0xEFDF4330),
+          secondaryContainer: Color(0xFF90CB82),
+        ),
+        buttonTheme: ButtonThemeData(
+          buttonColor: Colors.blueGrey,
+          textTheme: ButtonTextTheme.primary,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+        ),
       ),
-      home: ChatScreen(),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (ctx, authSnapshot) {
+          return Container(
+            color: Theme.of(context).colorScheme.primaryFixedDim,
+            child: SafeArea(
+              child: authSnapshot.hasData ? ChatScreen() : AuthScreen(),
+            ),
+          );
+        },
+      ),
     );
   }
 }
-
-

@@ -1,34 +1,49 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:global_chat/widgets/messages.dart';
+import 'package:global_chat/widgets/send_message.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key});
 
+
+
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Global chat 💬"),
         actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.logout_outlined)),
+          PopupMenuButton(
+            icon: Icon(Icons.more_vert),
+            itemBuilder: (ctx) => [
+              PopupMenuItem(
+                value: "logout",
+                child: Row(
+                  children: [
+                    Text("Logout"),
+                    SizedBox(width: 12),
+                    Icon(Icons.logout),
+                  ],
+                ),
+              ),
+            ],
+            onSelected: (identifier) {
+              if (identifier == "logout") {
+                FirebaseAuth.instance.signOut();
+              }
+            },
+          ),
         ],
       ),
-      body: ListView.builder(
-        itemCount: 48,
-        itemBuilder: (ctx, ind) => Container(
-          padding: const EdgeInsets.all(10),
-          child: Text("This works..."),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          FirebaseFirestore.instance.collection('chats/VqEdFwD8iabYMUDAlh6K/messages').snapshots().listen((snapshot) {
-            snapshot.docs.forEach((item) {
-              print("${item['text']}");
-            });
-          });
-        },
-        child: Icon(Icons.send),
+      body: Column(
+        children: [
+          Expanded(child: Messages()),
+          SendMessage(),
+        ],
       ),
     );
   }
