@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:global_chat/widgets/auth/auth_form.dart';
@@ -23,6 +26,7 @@ class _AuthScreenState extends State<AuthScreen> {
     required String email,
     required String password,
     String? username,
+    File? userImg,
     required bool isLogin,
     required BuildContext ctx,
   }) async {
@@ -44,15 +48,28 @@ class _AuthScreenState extends State<AuthScreen> {
             .get();
         await prefs.setString("username", userData.data()?["username"]);
       } else {
+        // var userImageUploadLink = '';
         credential = await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
+        // FirebaseStorage.instance
+        //     .ref()
+        //     .child("user-images")
+        //     .child("${credential.user?.uid}.jpg")
+        //     .putFile(userImg!)
+        //     .then((snapshot) async {
+        //       final userImgUrl = await snapshot.ref.getDownloadURL();
+        //       if (kDebugMode) print(userImgUrl);
+        //       userImageUploadLink = userImgUrl;
+        //       prefs.setString("userImg", userImgUrl);
+        //     });
         prefs.setString("username", username!);
+
         await _firestore.collection("users").doc(credential.user?.uid).set({
           'email': email,
           'username': username,
-          // 'photo': ''
+          // 'user_image': userImageUploadLink
         });
       }
       setState(() {
