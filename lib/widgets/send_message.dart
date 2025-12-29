@@ -17,13 +17,14 @@ class _SendMessageState extends State<SendMessage> {
   late final focusScope = FocusScope.of(context);
 
   void _sendMessage() async {
-    final prefs = await SharedPreferences.getInstance();
     focusScope.unfocus();
-    FirebaseFirestore.instance.collection("chat").add({
-      "text": _typedMessage,
-      "userId": _auth.currentUser?.uid,
-      "createdAt": Timestamp.now(),
-      "username": prefs.getString("username"),
+    await SharedPreferences.getInstance().then((instance) {
+      FirebaseFirestore.instance.collection("chat").add({
+        "text": _typedMessage,
+        "userId": _auth.currentUser?.uid,
+        "createdAt": Timestamp.now(),
+        "username": instance.getString("username")
+      });
     });
     _messageController.clear();
     _typedMessage = "";

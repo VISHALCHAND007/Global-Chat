@@ -14,6 +14,7 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> {
   final _auth = FirebaseAuth.instance;
+  final _firestore = FirebaseFirestore.instance;
   late final scaffoldMessenger = ScaffoldMessenger.of(context);
   late final theme = Theme.of(context);
   var _isLoading = false;
@@ -36,20 +37,23 @@ class _AuthScreenState extends State<AuthScreen> {
           email: email,
           password: password,
         );
+        //fetching and saving username
+        final userData = await _firestore
+            .collection("users")
+            .doc(credential.user?.uid)
+            .get();
+        await prefs.setString("username", userData.data()?["username"]);
       } else {
         credential = await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
         prefs.setString("username", username!);
-        await FirebaseFirestore.instance
-            .collection("users")
-            .doc(credential.user?.uid)
-            .set({
-              'email': email,
-              'username': username,
-              // 'photo': ''
-            });
+        await _firestore.collection("users").doc(credential.user?.uid).set({
+          'email': email,
+          'username': username,
+          // 'photo': ''
+        });
       }
       setState(() {
         _isLoading = false;
