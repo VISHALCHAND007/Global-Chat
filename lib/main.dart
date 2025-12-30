@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:global_chat/screens/native_code_screen.dart';
 import 'firebase_options.dart';
 import 'package:global_chat/screens/auth_screen.dart';
 import 'package:global_chat/screens/chat_screen.dart';
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
+      routes: {NativeCodeScreen.routeName: (ctx) => NativeCodeScreen()},
       home: StreamBuilder(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (ctx, authSnapshot) {
